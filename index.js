@@ -8,6 +8,11 @@ const flash = require("connect-flash");
 const ExpressError = require("./utils/ExpressError");
 const campgroundsRoutes = require("./routes/campgrounds");
 const reviewsRoutes = require("./routes/reviews");
+const UsersRoutes = require("./routes/users");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./db_models/user");
+
 
 mongoose.connect("mongodb+srv://admin:bananaPancake@cluster0.8mxmo.mongodb.net/yelp-camp?retryWrites=true&w=majority", { 
   useNewUrlParser: true,
@@ -43,14 +48,25 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 app.use((request, response, next) => {
   response.locals.success = request.flash("success");
   response.locals.error = request.flash("error");
+  response.locals.currentUser = request.user;
   next();
 });
 
+
+app.use("/", UsersRoutes);
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/reviews", reviewsRoutes);
+
 
 app.get("/", (request, response) => {
   response.render("home")

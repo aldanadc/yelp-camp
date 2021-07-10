@@ -1,4 +1,9 @@
 const Campground = require("../db_models/campground");
+const { cloudinary } = require("../cloudinary");
+const MapBoxGeoCoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geoCoder = MapBoxGeoCoding({accessToken: mapBoxToken});
+
 
 const showIndex = async (request, response) => {
   const campgrounds = await Campground.find({});
@@ -10,7 +15,12 @@ const showNewCampForm = (request, response) => {
 }
 
 const createCampground = async (request, response, next) => {
+  const geoCoderResponse = await geoCoder.forwardGeocode({
+    query: request.body.campground.location,
+    limit: 1
+  }).send();
   const campground = new Campground(request.body.campground);
+  campground.geometry = geoCoderResponse.body.features[0].geometry;
   campground.author = request.user._id;
   campground.images = request.files.map(file => ({ url: file.path, filename: file.filename }));
   await campground.save();
@@ -45,11 +55,18 @@ const showEditCampForm = async (request, response) => {
 
 const editCampground = async (request, response) => {
   const { id } = request.params;
+  console.log(request.body);
   const campground = await Campground.findByIdAndUpdate(id, {...request.body.campground}, {new: true})
   const images = request.files.map(file => ({ url: file.path, filename: file.filename }));
   campground.images.push(...images);
   await campground.save();
-  request.flash("success", "Successfully updated campground");
+  if (request.body.deleteImages) {
+    for (let filename of request.body.deleteImages) {
+      await cloudinary.uploader.destroy(filename);
+    }
+    await campground.updateOne({ $pull: { images: { filename: { $in: request.body.deleteImages} } } });
+  }
+  request.flash("success", "Successfully updated the campground");
   response.redirect(`/campgrounds/${campground._id}`);
 }
 

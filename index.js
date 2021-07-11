@@ -16,6 +16,9 @@ const UsersRoutes = require("./routes/users");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./db_models/user");
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet");
+const { contentSecurityConfig } = require("./content-security");
 
 
 mongoose.connect("mongodb+srv://admin:bananaPancake@cluster0.8mxmo.mongodb.net/yelp-camp?retryWrites=true&w=majority", { 
@@ -32,12 +35,15 @@ db.once("open", () => {
 });
 
 const app = express();
+
 const sessionConfig = {
-  secret: "blueberries",
+  name: "session",
+  secret: "blueberriesaregreat",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    //secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
@@ -51,6 +57,9 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(mongoSanitize());
+app.use(helmet());
+app.use(helmet.contentSecurityPolicy(contentSecurityConfig));
 
 app.use(passport.initialize());
 app.use(passport.session());

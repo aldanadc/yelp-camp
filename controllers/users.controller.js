@@ -34,7 +34,7 @@ const loginSuccess = (request, response) => {
 
 const logout = (request, response) => {
   request.logout();
-  request.flash("success", "Logged out!");
+  request.flash("success", "Logged out, see you soon!");
   response.redirect("/campgrounds");
 }
 

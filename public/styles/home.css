@@ -30,7 +30,7 @@ body {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.btn-secondary, .btn-secondary:hover {
+.btn-secondary, .btn-secondary:hover, .btn-secondary:active, .btn-secondary:visited  {
   color: #333;
   text-shadow: none;
 }

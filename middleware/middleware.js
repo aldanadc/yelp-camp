@@ -2,6 +2,7 @@ const { campgroundSchema, reviewSchema } = require("../joiSchemas.js");
 const ExpressError = require("../utils/ExpressError");
 const Campground = require("../db_models/campground");
 const Review = require("../db_models/review");
+const mongooseObjectId = require('mongoose').Types.ObjectId;
 
 const isLoggedIn = (request, response, next) => {
   if (!request.isAuthenticated()) {
@@ -23,11 +24,12 @@ const validateCampground = (request, response, next) => {
   }
 }
 
-
 const isAuthor = async(request, response, next) => {
   const { id } = request.params;
   const campground = await Campground.findById(id);
-  if (!campground.author.equals(request.user._id)) {
+  if (!campground || !mongooseObjectId.isValid(id)) {
+    request.flash("error", "A campground with the specified ID does not exist");
+  }else if (!campground.author.equals(request.user._id)) {
     request.flash("error", "You don't have permission to do that");
     return response.redirect(`/campgrounds/${id}`);
   }

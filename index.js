@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const dbUrl = process.env.DB_URL;
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
 const session = require("express-session");
@@ -19,9 +20,13 @@ const User = require("./db_models/user");
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
 const { contentSecurityConfig } = require("./content-security");
+const MongoStore = require('connect-mongo');
+const app = express();
+const secret = process.env.SESSION_SECRET || "blueberriesareyummy";
+const port = process.env.PORT || 3000;
 
 
-mongoose.connect("mongodb+srv://admin:bananaPancake@cluster0.8mxmo.mongodb.net/yelp-camp?retryWrites=true&w=majority", { 
+mongoose.connect(dbUrl, { 
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
@@ -34,11 +39,20 @@ db.once("open", () => {
   console.log("Database connected")
 });
 
-const app = express();
+const store = new MongoStore({
+  mongoUrl: dbUrl,
+  secret,
+  touchAfter: 24 * 60 * 60
+});
+
+store.on("error", function(error) {
+  console.log("Session store error", error)
+});
 
 const sessionConfig = {
+  store,
   name: "session",
-  secret: "blueberriesaregreat",
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -67,7 +81,6 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-
 app.use((request, response, next) => {
   response.locals.success = request.flash("success");
   response.locals.error = request.flash("error");
@@ -75,11 +88,9 @@ app.use((request, response, next) => {
   next();
 });
 
-
 app.use("/", UsersRoutes);
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/reviews", reviewsRoutes);
-
 
 app.get("/", (request, response) => {
   response.render("home")
@@ -95,6 +106,6 @@ app.use((err, request, response, next) => {
   response.status(statusCode).render("error", { err });
 });
 
-app.listen(3000, () => {
-  console.log("Server is ready on port 3000");
+app.listen(port, () => {
+  console.log(`Server is ready on port ${port}`);
 });

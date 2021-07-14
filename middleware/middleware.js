@@ -24,16 +24,18 @@ const validateCampground = (request, response, next) => {
   }
 }
 
-const isAuthor = async(request, response, next) => {
+const isAuthor = (request, response, next) => {
   const { id } = request.params;
-  const campground = await Campground.findById(id);
-  if (!campground || !mongooseObjectId.isValid(id)) {
-    request.flash("error", "A campground with the specified ID does not exist");
-  }else if (!campground.author.equals(request.user._id)) {
-    request.flash("error", "You don't have permission to do that");
-    return response.redirect(`/campgrounds/${id}`);
-  }
-  next();
+  Campground.findById(id, function(err, campground) {
+    if (err || !campground) {
+      request.flash("error", "A campground with the specified ID does not exist");
+      return response.redirect("/campgrounds");
+    }else if (!campground.author.equals(request.user._id)) {
+      request.flash("error", "You don't have permission to do that");
+      return response.redirect(`/campgrounds/${id}`);
+    }
+    next();
+  })
 }
 
 const validateReview = (request, response, next) => {

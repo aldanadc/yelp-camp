@@ -15,11 +15,11 @@ router.route("/")
 router.get("/new", isLoggedIn, showNewCampForm);
 
 router.route("/:id")
-  .get(catchAsync(showCampground))
+  .get(showCampground)
   .put(isLoggedIn, isAuthor, upload.array("image"), validateCampground, catchAsync(editCampground))
   .delete(isLoggedIn, isAuthor, catchAsync(deleteCampground));
 
-router.get("/:id/edit", isLoggedIn, isAuthor, catchAsync(showEditCampForm));
+router.get("/:id/edit", isLoggedIn, isAuthor, showEditCampForm);
 
 
 module.exports = router;

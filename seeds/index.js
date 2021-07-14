@@ -4,7 +4,7 @@ const Campground = require("../db_models/campground");
 const cities = require("./cities");
 const { places, descriptors } = require("./seedHelpers");
 
-mongoose.connect("mongodb+srv://admin:bananaPancake@cluster0.8mxmo.mongodb.net/yelp-camp?retryWrites=true&w=majority", {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true
@@ -78,16 +78,6 @@ const seedDB = async () => {
         imageSeeds[randomImg],
         imageSeeds[randomImgSecond],
       ]
-      // images: [
-      //   {
-      //     url: "https://res.cloudinary.com/dtuxjuyjb/image/upload/v1625195154/YelpCamp/ggd0aabla4g0k31w0nrt.jpg",
-      //     filename: "YelpCamp/ggd0aabla4g0k31w0nrt"
-      //   },
-      //   {
-      //     url: "https://res.cloudinary.com/dtuxjuyjb/image/upload/v1625195159/YelpCamp/a4pllumsro0qdn8yurck.jpg",
-      //     filename: "YelpCamp/a4pllumsro0qdn8yurck"
-      //   }
-      // ]
     })
     
     await camp.save();

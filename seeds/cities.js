@@ -216,7 +216,7 @@ module.exports = [
         state: "Massachusetts",
     },
     {
-        city: "Nashville-Davidson",
+        city: "Nashville Davidson",
         growth_from_2000_to_2013: "16.2%",
         latitude: 36.1626638,
         longitude: -86.7816016,
@@ -540,7 +540,7 @@ module.exports = [
         state: "Texas",
     },
     {
-        city: "Lexington-Fayette",
+        city: "Lexington Fayette",
         growth_from_2000_to_2013: "18.0%",
         latitude: 38.0405837,
         longitude: -84.5037164,
@@ -765,7 +765,7 @@ module.exports = [
         state: "California",
     },
     {
-        city: "Winston-Salem",
+        city: "Winston Salem",
         growth_from_2000_to_2013: "16.9%",
         latitude: 36.09985959999999,
         longitude: -80.244216,
@@ -1062,7 +1062,7 @@ module.exports = [
         state: "Arkansas",
     },
     {
-        city: "Augusta-Richmond County",
+        city: "Augusta Richmond County",
         growth_from_2000_to_2013: "1.1%",
         latitude: 33.4734978,
         longitude: -82.0105148,

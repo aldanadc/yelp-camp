@@ -4,7 +4,7 @@ const Campground = require("../db_models/campground");
 const cities = require("./cities");
 const { places, descriptors } = require("./seedHelpers");
 
-mongoose.connect(dbUrl, {
+mongoose.connect("mongodb+srv://admin:bananaPancake@cluster0.8mxmo.mongodb.net/yelp-camp?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true
@@ -22,10 +22,6 @@ const imageSeeds = [
   {
     url: "https://res.cloudinary.com/dtuxjuyjb/image/upload/v1625195154/YelpCamp/ggd0aabla4g0k31w0nrt.jpg",
     filename: "YelpCamp/ggd0aabla4g0k31w0nrt"
-  },
-  {
-    url: "https://res.cloudinary.com/dtuxjuyjb/image/upload/v1625195159/YelpCamp/a4pllumsro0qdn8yurck.jpg",
-    filename: "YelpCamp/a4pllumsro0qdn8yurck"
   },
   {
     url: "https://res.cloudinary.com/dtuxjuyjb/image/upload/v1626219200/YelpCamp/manuel-meurisse-EuCll-F5atI-unsplash_qumy84.jpg",
@@ -62,11 +58,11 @@ const seedDB = async () => {
   await Campground.deleteMany({});
   for (let i = 0; i < 200; i++) {
     const random1000 = Math.floor(Math.random() * 1000);
-    const randomImg = Math.floor(Math.random() * 6);
-    const randomImgSecond = Math.floor(Math.random() * 6);
+    const randomImg = Math.floor(Math.random() * 8);
+    const randomImgSecond = Math.floor(Math.random() * 8);
     const price = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
-      author: "60d7c54ff21c483e109c1f4c",
+      author: "60ee2f44458bb033c4b9b75a",
       title: `${sample(descriptors)} ${sample(places)}`,
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet, ea consequatur. Aliquam quasi dolorem nisi expedita, dolor ea eos rem autem voluptate consequatur incidunt placeat molestiae sapiente repellat provident consequuntur.",
@@ -93,6 +89,7 @@ const seedDB = async () => {
       //   }
       // ]
     })
+    
     await camp.save();
   }
 }
